@@ -1,0 +1,5 @@
+{
+    "js/change_link.min.js": [
+        "public/js/change_link.js"
+    ]
+}

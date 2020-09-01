@@ -17,6 +17,8 @@ app_license = "MIT"
 # include js, css files in header of desk.html
 # app_include_css = "/assets/link_change/css/link_change.css"
 # app_include_js = "/assets/link_change/js/link_change.js"
+app_include_js = "/assets/js/change_link.min.js"
+
 
 # include js, css files in header of web template
 # web_include_css = "/assets/link_change/css/link_change.css"
@@ -134,4 +136,8 @@ app_license = "MIT"
 # exempt linked doctypes from being automatically cancelled
 #
 # auto_cancel_exempted_doctypes = ["Auto Repeat"]
+
+override_whitelisted_methods = {
+	"frappe.desk.search.search_link": "link_change.api.search_link"
+}
 

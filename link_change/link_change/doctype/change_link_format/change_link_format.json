@@ -1,0 +1,50 @@
+{
+ "actions": [],
+ "autoname": "field:doctype_ct",
+ "creation": "2020-09-01 23:32:16.342604",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "doctype_ct",
+  "field"
+ ],
+ "fields": [
+  {
+   "fieldname": "doctype_ct",
+   "fieldtype": "Link",
+   "label": "Doctype",
+   "options": "DocType",
+   "unique": 1
+  },
+  {
+   "fieldname": "field",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Field"
+  }
+ ],
+ "links": [],
+ "modified": "2020-09-01 23:32:47.165122",
+ "modified_by": "Administrator",
+ "module": "Link Change",
+ "name": "Change Link Format",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "track_changes": 1
+}
