@@ -53,7 +53,6 @@ def sanitize_searchfield(searchfield):
 @frappe.whitelist()
 def search_link(doctype, txt, query=None, filters=None, page_length=20, searchfield=None, reference_doctype=None, ignore_user_permissions=False):
 	search_widget(doctype, txt.strip(), query, searchfield=searchfield, page_length=page_length, filters=filters, reference_doctype=reference_doctype, ignore_user_permissions=ignore_user_permissions)
-	# frappe.errprint(build_for_autosuggest(frappe.response["values"]))
 	frappe.response['results'] = build_for_autosuggest(frappe.response["values"],doctype)
 	del frappe.response["values"]
 
@@ -85,11 +84,11 @@ def search_widget(doctype, txt, query=None, searchfield=None, start=0,
 	if query and query.split()[0].lower()!="select":
 		# by method
 		frappe.errprint('if')
-		frappe.errprint(query)
+		frappe.errprint(searchfield)
 		try:
 			is_whitelisted(frappe.get_attr(query))
 			frappe.response["values"] = frappe.call(query, doctype, txt,
-				searchfield, start, page_length, filters, as_dict=1)
+				searchfield, start, page_length, filters, as_dict=as_dict)
 		except Exception as e:
 			if frappe.local.conf.developer_mode:
 				raise e
@@ -98,7 +97,6 @@ def search_widget(doctype, txt, query=None, searchfield=None, start=0,
 				indicator_color='red', http_status_code=404)
 			return
 	elif not query and doctype in standard_queries:
-		frappe.errprint('else')
 		# from standard queries
 		search_widget(doctype, txt, standard_queries[doctype][0],
 			searchfield, start, page_length, filters)
@@ -209,17 +207,32 @@ def get_std_fields_list(meta, key):
 def build_for_autosuggest(res,doctype=None):
 	frappe.errprint(res)
 	results = []
+	field = frappe.db.get_value("Change Link Format",doctype,"field")
+	field_value_map = get_fields_map(res,doctype)
 	for r in res:
-		field = frappe.db.get_value("Change Link Format",doctype,"field")
 		out = {
 			"value": r[0], 
 			"description": ", ".join(unique(cstr(d) for d in r if d)[1:]),
-			"label":frappe.db.get_value(doctype,r[0],field) if field else r[0]
+			"label":field_value_map.get(r[0]) if field else r[0]
 		}
 		if field:
 			out["description"] = out["description"] + ',' + cstr(r[0])
 		results.append(out)
 	return results
+
+def get_fields_map(res,doctype):
+	field = frappe.db.get_value("Change Link Format",doctype,"field")
+	data = {}
+	if field:
+		doctype_data = frappe.db.sql("""select name,{field} from `tab{doctype}` 
+			where name in ({condition})""".format(**{
+				"field":field,
+				"doctype":doctype,
+				"condition":', '.join([frappe.db.escape(i[0]) for i in res])
+			}),as_dict=1)
+		for d in doctype_data:
+			data.setdefault(d.get('name'),d.get(field))
+	return data
 
 def scrub_custom_query(query, key, txt):
 	if '%(key)s' in query:
